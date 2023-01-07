@@ -2,20 +2,23 @@
 
 . ./deploy_lib/log.sh
 
-prepareEnv() {
-    createWorkDir 2>/dev/null
-    isError=$?
-    if [[ $isError -eq 1 ]]; then
-      if [ -d "$WORKDIR" ]; then
-        inf "engine start" "Success - Work directory already exists. Deleting its contents"
-        rm -rf $WORKDIR
-      else
-        err "engine start" "Can not create work directory. Directory does not exist"
-        exit
-      fi
+prepareLocalEnv() {
+  createWorkDir 2>/dev/null
+  isError=$?
+  if [[ $isError -eq 1 ]]; then
+    if [ -d "$WORKDIR" ]; then
+      inf "engine start" "Success - Work directory already exists. Deleting its contents"
+      rm -rf $WORKDIR
     else
-      inf "engine start" "Success - Create work directory"
+      err "engine start" "Can not create work directory. Directory does not exist"
+      exit
     fi
+  else
+    inf "engine start" "Success - Create work directory"
+  fi
+
+#  installPython 2>&1 | tee $WORKDIR/log/local.log
+#  installLinodeCli 2>&1 | tee $WORKDIR/log/local.log
 }
 
 engineCreate() {
@@ -28,10 +31,8 @@ engineCreate() {
   fi
   inf "engine start" "Success - Copy terraform files to work directory"
 
-#  installPython 2>&1
-  cat dev/null > $WORKDIR/log/tf.log
+  cat dev/null >$WORKDIR/log/tf.log
   createKubeHost 2>&1 | tee $WORKDIR/log/tf.log
-#  installLinodeCli 2>&1 | tee $WORKDIR/log/tf.log
 }
 
 createWorkDir() {

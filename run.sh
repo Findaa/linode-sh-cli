@@ -13,7 +13,7 @@ main() {
   select opt in "${options[@]}"; do
     case $opt in
     "Create kube host")
-      prepareEnv
+      prepareLocalEnv
       engineCreate
       printOptions
       ;;
