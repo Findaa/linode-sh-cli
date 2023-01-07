@@ -1,9 +1,9 @@
 #!/bin/bash
 
 inf() {
-  echo "[$(date) \t $1] \t INFO: $2"
+  echo "[\033[32;32m$(date) \t $1] \t INFO:\033[0m $2"
 }
 
 err() {
-  echo "[ $(date) \t $1] \t ERROR: $2"
+  echo "[\033[31;40m$(date) \t $1] \t [32m+ERROR:\033[0m $2"
 }

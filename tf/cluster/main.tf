@@ -6,7 +6,7 @@ terraform {
     }
   }
 }
-//Use the Linode Provider
+
 provider "linode" {
   token = var.token
 }
