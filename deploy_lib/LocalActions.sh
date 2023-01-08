@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./deploy_lib/log.sh
+. ./deploy_lib/CliManager.sh
 
 prepareLocalEnv() {
   createWorkDir 2>/dev/null
@@ -21,7 +21,7 @@ prepareLocalEnv() {
 #  installLinodeCli 2>&1 | tee $WORKDIR/log/local.log
 }
 
-engineCreate() {
+kubeHostCreate() {
   copyTerraformFiles 2>/dev/null
   isError=$?
   if [[ $isError -eq 1 ]]; then
@@ -32,13 +32,15 @@ engineCreate() {
   inf "engine start" "Success - Copy terraform files to work directory"
 
   cat dev/null >$WORKDIR/log/tf.log
-  createKubeHost 2>&1 | tee $WORKDIR/log/tf.log
+  deployKubeHost 2>&1 | tee $WORKDIR/log/tf.log
+
 }
 
 createWorkDir() {
   mkdir $WORKDIR
   cd $WORKDIR
   mkdir log
+  mkdir db
   cd ..
 }
 
@@ -46,7 +48,7 @@ copyTerraformFiles() {
   cp -r ./tf $WORKDIR
 }
 
-createKubeHost() {
+deployKubeHost() {
   cd $WORKDIR/tf/engine
   terraform init
   terraform plan
@@ -54,22 +56,18 @@ createKubeHost() {
   cd ../..
 }
 
-engineDestroy() {
+kubeHostDestroy() {
   cd $WORKDIR/tf/engine
   terraform destroy -auto-approve
   isError=$?
   if [[ $isError -eq 1 ]]; then
     err "engine destroy" "Can not delete linode engine."
   else
-    inf "engine destroy" "Kube host removed successfully. Check worker nodes."
+    inf "engine destroy" "Kube host doest not exist now. Check if connected worker nodes are removed."
   fi
   cd .. && remove -rf ./engine
   cd ..
   echo "current dir test: " $(pwd)
-}
-
-testFunction() {
-  touch test.txt
 }
 
 installPython() {
@@ -100,7 +98,6 @@ installLinodeCli() {
   isError=$?
   if [[ $isError -eq 0 ]]; then
     inf "linode-cli" "Linode cli installed sucessfully"
-    export LINODE_CLI_TOKEN="949505f61e40135f06bf04fe99c699d15b008f8ca2a6e430d437fd3b752735ab"
   else
     err "linode-cli" "Could not install linode cli"
   fi

@@ -1,0 +1,3 @@
+id	label	region	type	image	status	ipv4
+41468428	terraformHost	us-east	g6-nanode-1	linode/ubuntu18.04	running	66.175.210.160
+41469247	debian-us-southeast	us-southeast	g6-nanode-1	linode/debian11	running	173.230.135.102
