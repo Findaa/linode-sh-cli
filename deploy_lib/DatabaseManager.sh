@@ -1,5 +1,4 @@
 #!/bin/bash
-#MOST LIKELY temp file. Either temp or used to call py functions reading data.
 
 getKubeHostIp() {
   #todo: temporary solution, use file reader
@@ -19,17 +18,20 @@ nodesPrint() {
 }
 
 nodesSaveAsCsv() {
-  cat /dev/null > $WORKDIR/db/db.txt
-  fetchNodes > $WORKDIR/db/db.txt
-  cd $WORKDIR/db
+  cat /dev/null > db/db.txt
+  fetchNodes > db/db.txt
+  cd db
   cp db.txt db.csv
-
 #  Linux version
 #  sed -i "s/[[:blank:]]\{1,\}/ /g" db.csv
 
 #  OSX version
   sed -i '' 's/[[:blank:]]\{1,\}/;/g' db.csv
 
-  cd ../..
+  inf "database update" "Database updated sucessfuly."
+  cd ..
 }
 
+hostNodeIp() {
+ echo "ip"
+}

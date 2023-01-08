@@ -9,34 +9,32 @@ prepareLocalEnv() {
   createWorkDir 2>/dev/null
   isError=$?
   if [[ $isError -eq 1 ]]; then
-    if [ -d "$WORKDIR" ]; then
-      inf "local start" "Success - Work directory already exists. Deleting its contents"
-      rm -rf $WORKDIR
-    else
-      err "local start" "Can not create work directory. Directory does not exist"
-      exit
-    fi
-  else
-    inf "local start" "Success - Create work directory"
+    err "local start" "Can not create work directory. Directory does not exist. Program will exit now as this is vital for its functionality."
+    exit
   fi
 
   installPython 2>&1 | tee $WORKDIR/log/local.log
   installLinodeCli 2>&1 | tee $WORKDIR/log/local.log
-
+# special sign removal (some shit colours)
   sed $'s/[^[:print:]\t]//g' $WORKDIR/log/local.log
 
-  populateWorkFolder
   cd work
   echo "\n\n"
   sh worker.sh
 }
 
 createWorkDir() {
-  mkdir $WORKDIR
-  cd $WORKDIR
-  mkdir log
-  mkdir db
-  cd ..
+  if [ -d "$WORKDIR" ]; then
+    inf "local start" "Work directory already exists. If new folder needs to be done, check if kube host is running, delete it first and then manually delete work folder. \nIf folder is deleted when env is deployed, this will remove possibility to either create or destroy kube host and workers due to terraform state changes."
+  else
+    mkdir $WORKDIR
+    cd $WORKDIR
+    mkdir log
+    mkdir db
+    cd ..
+    inf "local start" "Success - Create work directory"
+    populateWorkFolder
+  fi
 }
 
 installPython() {
