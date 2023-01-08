@@ -14,11 +14,11 @@ fetchNodes() {
   linode-cli linodes list --text
 }
 
-printNodes() {
+nodesPrint() {
   linode-cli linodes list
 }
 
-saveNodesAsCsv() {
+nodesSaveAsCsv() {
   cat /dev/null > $WORKDIR/db/db.txt
   fetchNodes > $WORKDIR/db/db.txt
   cd $WORKDIR/db
