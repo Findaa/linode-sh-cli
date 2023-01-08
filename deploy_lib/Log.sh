@@ -5,6 +5,6 @@ inf() {
 }
 
 err() {
-  echo "\033[31;40m[$(date) \t $1] \t [32m+ERROR:\033[0m $2"
+  echo "\033[31;40m[$(date) \t $1] \t ERROR:\033[0m $2"
 }
 

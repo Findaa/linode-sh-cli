@@ -1,7 +1,6 @@
 #!/bin/bash
 #MOST LIKELY temp file. Either temp or used to call py functions reading data.
 
-
 getKubeHostIp() {
   #todo: temporary solution, use file reader
   #example: linode-cli linodes list --json --pretty >> db.txt then get the db.txt and read values from here
@@ -11,11 +10,26 @@ getKubeHostIp() {
   echo hostIp
 }
 
-listNodes() {
-  echo $(linode-cli linodes list)
+fetchNodes() {
+  linode-cli linodes list --text
 }
 
-getKubeHostName() {
+printNodes() {
+  linode-cli linodes list
+}
 
+saveNodesAsCsv() {
+  cat /dev/null > $WORKDIR/db/db.txt
+  fetchNodes > $WORKDIR/db/db.txt
+  cd $WORKDIR/db
+  cp db.txt db.csv
+
+#  Linux version
+#  sed -i "s/[[:blank:]]\{1,\}/ /g" db.csv
+
+#  OSX version
+  sed -i '' 's/[[:blank:]]\{1,\}/;/g' db.csv
+
+  cd ../..
 }
 
