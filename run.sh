@@ -9,34 +9,62 @@ prepareLocalEnv() {
   createWorkDir 2>/dev/null
   isError=$?
   if [[ $isError -eq 1 ]]; then
-    if [ -d "$WORKDIR" ]; then
-      inf "local start" "Success - Work directory already exists. Deleting its contents"
-      rm -rf $WORKDIR
-    else
-      err "local start" "Can not create work directory. Directory does not exist"
-      exit
-    fi
-  else
-    inf "local start" "Success - Create work directory"
+    err "local start" "Can not create work directory. Directory does not exist. Program will exit now as this is vital for its functionality."
+    exit
   fi
 
   installPython 2>&1 | tee $WORKDIR/log/local.log
   installLinodeCli 2>&1 | tee $WORKDIR/log/local.log
-
+# special sign removal (some shit colours)
   sed $'s/[^[:print:]\t]//g' $WORKDIR/log/local.log
 
-  populateWorkFolder
   cd work
   echo "\n\n"
   sh worker.sh
 }
 
 createWorkDir() {
-  mkdir $WORKDIR
-  cd $WORKDIR
-  mkdir log
-  mkdir db
-  cd ..
+  if [ -d "$WORKDIR" ]; then
+    inf "local start" "Work directory already exists. If terraform files were changed, it requires manual deletion."
+  else
+    mkdir $WORKDIR
+    cd $WORKDIR
+    mkdir log
+    mkdir db
+    cd ..
+    inf "local start" "Success - Create work directory"
+  fi
+  populateWorkFolder
+}
+
+populateWorkFolder() {
+  if [ -n "$(ls -A $WORKDIR/tf 2>/dev/null)" ]; then
+    inf "engine start" "Terraform folder already exists, overwrite is not performed automatically."
+  else
+    cp -r ./tf $WORKDIR
+    isError=$?
+    if [[ $isError -eq 1 ]]; then
+      err "engine start" "Can not copy terraform folder. Check if working directory exists or root folder is OK"
+      exit
+    fi
+    inf "engine start" "Success - Copy terraform files to work directory"
+  fi
+
+  cp -r ./deploy_lib $WORKDIR
+  isError=$?
+  if [[ $isError -eq 1 ]]; then
+    err "engine start" "Can not copy deploy_lib folder. Check if working directory exists or root folder is OK"
+    exit
+  fi
+  inf "engine start" "Success - Copy deploy_lib files to work directory"
+
+  cp ./deploy_lib/worker.sh $WORKDIR
+  isError=$?
+  if [[ $isError -eq 1 ]]; then
+    err "engine start" "Can not copy run script. Check if working directory exists or root folder is OK"
+    exit
+  fi
+  inf "engine start" "Success - Copy run script files to work directory"
 }
 
 installPython() {
@@ -78,32 +106,6 @@ installLinodeCli() {
   else
     err "local linode-cli" "Could not install linode cli"
   fi
-}
-
-populateWorkFolder() {
-  cp -r ./tf $WORKDIR
-  isError=$?
-  if [[ $isError -eq 1 ]]; then
-    err "engine start" "Can not copy terraform folder. Check if working directory exists or root folder is OK"
-    exit
-  fi
-  inf "engine start" "Success - Copy terraform files to work directory"
-
-  cp -r ./deploy_lib $WORKDIR
-  isError=$?
-  if [[ $isError -eq 1 ]]; then
-    err "engine start" "Can not copy deploy_lib folder. Check if working directory exists or root folder is OK"
-    exit
-  fi
-  inf "engine start" "Success - Copy deploy_lib files to work directory"
-
-  cp ./deploy_lib/worker.sh $WORKDIR
-  isError=$?
-  if [[ $isError -eq 1 ]]; then
-    err "engine start" "Can not copy run script. Check if working directory exists or root folder is OK"
-    exit
-  fi
-  inf "engine start" "Success - Copy run script files to work directory"
 }
 
 prepareLocalEnv
