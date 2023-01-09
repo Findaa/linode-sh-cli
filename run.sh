@@ -25,7 +25,7 @@ prepareLocalEnv() {
 
 createWorkDir() {
   if [ -d "$WORKDIR" ]; then
-    inf "local start" "Work directory already exists. If new folder needs to be done, check if kube host is running, delete it first and then manually delete work folder. \nIf folder is deleted when env is deployed, this will remove possibility to either create or destroy kube host and workers due to terraform state changes."
+    inf "local start" "Work directory already exists. If terraform files were changed, it requires manual deletion."
   else
     mkdir $WORKDIR
     cd $WORKDIR
@@ -33,8 +33,8 @@ createWorkDir() {
     mkdir db
     cd ..
     inf "local start" "Success - Create work directory"
-    populateWorkFolder
   fi
+    populateWorkFolder
 }
 
 installPython() {
@@ -79,13 +79,17 @@ installLinodeCli() {
 }
 
 populateWorkFolder() {
-  cp -r ./tf $WORKDIR
-  isError=$?
-  if [[ $isError -eq 1 ]]; then
-    err "engine start" "Can not copy terraform folder. Check if working directory exists or root folder is OK"
-    exit
+  if [ -n "$(ls -A $WORKDIR 2>/dev/null)" ]; then
+    inf "engine start" "Terraform folder already exists, overwrite is not performed automatically."
+  else
+    cp -r ./tf $WORKDIR
+    isError=$?
+    if [[ $isError -eq 1 ]]; then
+      err "engine start" "Can not copy terraform folder. Check if working directory exists or root folder is OK"
+      exit
+    fi
+    inf "engine start" "Success - Copy terraform files to work directory"
   fi
-  inf "engine start" "Success - Copy terraform files to work directory"
 
   cp -r ./deploy_lib $WORKDIR
   isError=$?

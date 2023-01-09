@@ -9,22 +9,26 @@ getKubeHostIp() {
   echo hostIp
 }
 
-fetchNodes() {
+fetchNodesPlaintext() {
   linode-cli linodes list --text
 }
 
-nodesPrint() {
+fetchNodesFormatted() {
   linode-cli linodes list
 }
 
-nodesSaveAsCsv() {
+fetchNodesJson() {
+  linode-cli linodes list --json --pretty
+}
+upsertNodeDb() {
   cat /dev/null > db/db.txt
-  fetchNodes > db/db.txt
+  fetchNodesPlaintext > db/db.txt
+  fetchNodesJson > db/db.json
   cd db
   cp db.txt db.csv
+
 #  Linux version
 #  sed -i "s/[[:blank:]]\{1,\}/ /g" db.csv
-
 #  OSX version
   sed -i '' 's/[[:blank:]]\{1,\}/;/g' db.csv
 
@@ -32,6 +36,6 @@ nodesSaveAsCsv() {
   cd ..
 }
 
-hostNodeIp() {
+getHostNodeIp() {
  echo "ip"
 }

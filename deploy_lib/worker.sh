@@ -4,6 +4,7 @@ WORKDIR="./work"
 export LINODE_CLI_TOKEN="949505f61e40135f06bf04fe99c699d15b008f8ca2a6e430d437fd3b752735ab"
 
 . ./deploy_lib/LocalActions.sh
+. ./deploy_lib/CloudActions.sh
 . ./deploy_lib/DatabaseManager.sh
 . ./deploy_lib/Log.sh
 
@@ -32,9 +33,9 @@ main() {
       echo "you chose choice $REPLY which is $opt"
       ;;
     "List nodes")
-      nodesPrint
-      optionsPrint
+      fetchNodesFormatted
       databaseUpdate
+      optionsPrint
       ;;
     "Quit")
       break
@@ -42,6 +43,7 @@ main() {
       ;;
     "testOption")
       echo $(pwd)
+      uploadZip
       ;;
     *) echo "invalid option $REPLY"
       ;;
@@ -55,7 +57,7 @@ optionsPrint() {
 
 databaseUpdate() {
   if [ $(basename "`pwd`") == "work" ]; then
-    nodesSaveAsCsv
+    upsertNodeDb
   else
     err "database update" "Can not find a database directory. Does work folder exist?"
     echo $(pwd)

@@ -12,11 +12,13 @@ kubeHostDeploy() {
   terraform plan
   terraform apply -auto-approve
   cd ../..
+
+  zip work.zip ./*
+
 }
 
 #Needs rework for label based removal from IP.
 kubeHostDestroy() {
-  inf "test" $(pwd)
   cd tf/engine
   terraform destroy -auto-approve --target linode_instance.kubeHost
   isError=$?
@@ -25,8 +27,6 @@ kubeHostDestroy() {
   else
     inf "engine destroy" "Kube host should not exist now. Check if connected worker nodes are removed."
   fi
-  inf "test2" $(pwd)
   cd ../..
-  inf "test3" $(pwd)
 
 }
