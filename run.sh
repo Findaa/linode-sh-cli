@@ -34,7 +34,37 @@ createWorkDir() {
     cd ..
     inf "local start" "Success - Create work directory"
   fi
-    populateWorkFolder
+  populateWorkFolder
+}
+
+populateWorkFolder() {
+  if [ -n "$(ls -A $WORKDIR/tf 2>/dev/null)" ]; then
+    inf "engine start" "Terraform folder already exists, overwrite is not performed automatically."
+  else
+    cp -r ./tf $WORKDIR
+    isError=$?
+    if [[ $isError -eq 1 ]]; then
+      err "engine start" "Can not copy terraform folder. Check if working directory exists or root folder is OK"
+      exit
+    fi
+    inf "engine start" "Success - Copy terraform files to work directory"
+  fi
+
+  cp -r ./deploy_lib $WORKDIR
+  isError=$?
+  if [[ $isError -eq 1 ]]; then
+    err "engine start" "Can not copy deploy_lib folder. Check if working directory exists or root folder is OK"
+    exit
+  fi
+  inf "engine start" "Success - Copy deploy_lib files to work directory"
+
+  cp ./deploy_lib/worker.sh $WORKDIR
+  isError=$?
+  if [[ $isError -eq 1 ]]; then
+    err "engine start" "Can not copy run script. Check if working directory exists or root folder is OK"
+    exit
+  fi
+  inf "engine start" "Success - Copy run script files to work directory"
 }
 
 installPython() {
@@ -76,36 +106,6 @@ installLinodeCli() {
   else
     err "local linode-cli" "Could not install linode cli"
   fi
-}
-
-populateWorkFolder() {
-  if [ -n "$(ls -A $WORKDIR 2>/dev/null)" ]; then
-    inf "engine start" "Terraform folder already exists, overwrite is not performed automatically."
-  else
-    cp -r ./tf $WORKDIR
-    isError=$?
-    if [[ $isError -eq 1 ]]; then
-      err "engine start" "Can not copy terraform folder. Check if working directory exists or root folder is OK"
-      exit
-    fi
-    inf "engine start" "Success - Copy terraform files to work directory"
-  fi
-
-  cp -r ./deploy_lib $WORKDIR
-  isError=$?
-  if [[ $isError -eq 1 ]]; then
-    err "engine start" "Can not copy deploy_lib folder. Check if working directory exists or root folder is OK"
-    exit
-  fi
-  inf "engine start" "Success - Copy deploy_lib files to work directory"
-
-  cp ./deploy_lib/worker.sh $WORKDIR
-  isError=$?
-  if [[ $isError -eq 1 ]]; then
-    err "engine start" "Can not copy run script. Check if working directory exists or root folder is OK"
-    exit
-  fi
-  inf "engine start" "Success - Copy run script files to work directory"
 }
 
 prepareLocalEnv
