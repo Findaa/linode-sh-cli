@@ -2,8 +2,7 @@
 
 . ./deploy_lib/Log.sh
 
-WORKDIR="./work"
-export LINODE_CLI_TOKEN="949505f61e40135f06bf04fe99c699d15b008f8ca2a6e430d437fd3b752735ab"
+. ./deploy_lib/const.sh
 
 prepareLocalEnv() {
   createWorkDir 2>/dev/null

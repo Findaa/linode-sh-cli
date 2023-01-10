@@ -40,7 +40,7 @@ uploadWorkFiles() {
 
 installTerraformRemoteHost() {
   inf "cloud" "Installing terraform for kube host"
-  sshConnector 'terraformHost' 'cd ../tmp/bin && mv terraform /usr/local/bin/ && terraform -v'
+  sshConnector 'terraformHost' 'cd ../tmp/work/bin && mv terraform /usr/local/bin/ && terraform -v'
 }
 
 kubeClusterDeploy() {
@@ -56,6 +56,7 @@ kubeClusterDeploy() {
 
 kubeClusterDestroy() {
   cd tf/cluster
+  inf "cloud" "Starting to destroy kube workers"
   terraform destroy -var-file="../terraform.auto.tfvars" -auto-approve 2>1 1>/dev/null
 
   isError=$?
@@ -68,6 +69,15 @@ kubeClusterDestroy() {
   cd ../..
 }
 
+kubeClusterDeployFromCloud() {
+  sshConnector 'terraformHost' 'cd ../tmp/work/bin && mv terraform /usr/local/bin/ && terraform -v'
+
+  sh deploy_lib/cloud_functions/deployCluster.sh
+}
+
+kubeClusterDestroyFromCloud() {
+  sh deploy_lib/cloud_functions/deployCluster.sh
+}
 sshConnectionEnd() {
   exit
 }

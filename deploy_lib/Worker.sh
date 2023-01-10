@@ -11,9 +11,10 @@ export LINODE_CLI_TOKEN="949505f61e40135f06bf04fe99c699d15b008f8ca2a6e430d437fd3
 main() {
   appUser=$(whoami)
   inf "local application" "App started by ${appUser}"
-
-  PS3='Please enter your choice: '
-  options=("Create kube host" "Create cluster" "Delete host" "Delete cluster" "List nodes" "Quit" "testOption")
+  echo '\n'
+  echo "\033[1;35mLocal host menu\033[0m "
+  PS3="Choice:      "
+  options=("Create kube host" "Create cluster" "Delete host" "Delete cluster" "List nodes" "Quit" "Enter Cloud")
   select opt in "${options[@]}"; do
     case $opt in
     "Create kube host")
@@ -41,20 +42,19 @@ main() {
       optionsPrint
       ;;
     "Quit")
-
-      rm -rf bin
-      rm -rf db
-      rm -rf deploy_lib
+#      rm -rf bin
+#      rm -rf db
+#      rm -rf deploy_lib
+      err "HERE" $(pwd)
 
       break
       exit 420
       ;;
-    "testOption")
-      inf 'TEST' $(pwd)
-      whoami
-      optionsPrint
+    "Enter Cloud")
+      sh deploy_lib/Cloud.sh
       ;;
-    *) echo "invalid option $REPLY"
+    *)
+      echo "invalid option $REPLY"
       ;;
     esac
   done
