@@ -31,7 +31,9 @@ main() {
       optionsPrint
       ;;
     "Delete cluster")
-      echo "you chose choice $REPLY which is $opt"
+      kubeClusterDestroy
+      databaseUpdate
+      optionsPrint
       ;;
     "List nodes")
       fetchNodesFormatted
@@ -44,7 +46,7 @@ main() {
       ;;
     "testOption")
       inf 'TEST' $(pwd)
-      kubeClusterDestroy
+      whoami
       optionsPrint
       ;;
     *) echo "invalid option $REPLY"

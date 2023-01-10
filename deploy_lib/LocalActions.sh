@@ -23,10 +23,13 @@ kubeHostDeploy() {
   inf "local terraform" "Starting to deploy kube host"
   cd tf/engine
   terraform init
-  terraform plan -var-file="../terraform.auto.tfvars"
-  terraform apply -var-file="../terraform.auto.tfvars" -auto-approve
+  inf "local terraform" "Terraform initialized. Planning..."
+  terraform plan -var-file="../terraform.auto.tfvars" 2>1 1>/dev/null
+  inf "local terraform" "Terraform planned. Deploying..."
+  terraform apply -var-file="../terraform.auto.tfvars" -auto-approve 2>1 1>/dev/null
   cd ../..
 }
+
 
 #todo: label based removal from IP. Remove worker nodes first too.
 kubeHostDestroy() {
@@ -35,7 +38,7 @@ kubeHostDestroy() {
   inf "local terraform" "Destroying kube host. Removing $hostIp from known hosts "
 
   cd tf/engine
-  terraform destroy -var-file="../terraform.auto.tfvars" -auto-approve --target linode_instance.kubeHost
+  terraform destroy -var-file="../terraform.auto.tfvars" -auto-approve --target linode_instance.kubeHost 2>1 1>/dev/null
 
   isError=$?
   if [[ $isError -eq 1 ]]; then
