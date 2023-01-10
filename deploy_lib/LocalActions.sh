@@ -31,12 +31,13 @@ kubeHostDeploy() {
 }
 
 
-#todo: label based removal from IP. Remove worker nodes first too.
+#todo: label based removal by IP. Remove worker nodes first too.
 kubeHostDestroy() {
   hostIp=$(getNodeIpByName 'terraformHost')
-  ssh-keygen -f ~/.ssh/known_hosts -R $hostIp 2>&1 | tee log/local.log
   inf "local terraform" "Destroying kube host. Removing $hostIp from known hosts "
-
+  ssh-keygen -f ~/.ssh/known_hosts -R $hostIp 2>&1 | tee log/local.log
+  inf "local terraform" "Destroying kube host. Removing related kube worker nodes"
+  kubeClusterDestroy
   cd tf/engine
   terraform destroy -var-file="../terraform.auto.tfvars" -auto-approve --target linode_instance.kubeHost 2>1 1>/dev/null
 

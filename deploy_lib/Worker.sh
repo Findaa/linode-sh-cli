@@ -42,10 +42,9 @@ main() {
       optionsPrint
       ;;
     "Quit")
-#      rm -rf bin
-#      rm -rf db
-#      rm -rf deploy_lib
-      err "HERE" $(pwd)
+      rm -rf work/bin
+      rm -rf work/db
+      rm -rf work/deploy_lib
 
       break
       exit 420

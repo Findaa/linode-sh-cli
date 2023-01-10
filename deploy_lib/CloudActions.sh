@@ -14,7 +14,7 @@ sshConnector() {
   if [[ $isError -eq 1 ]]; then
     err "connector" "Error connecting with ssh"
   else
-    inf "connector" "Success connecting with ssh"
+    inf "connector" "Connection tried with ssh"
   fi
 }
 
@@ -22,9 +22,9 @@ uploadWorkFiles() {
   hostIp=$(getNodeIpByName 'terraformHost')
   scpAddress="root@$hostIp:/tmp"
   sshCommand="ssh -o 'StrictHostKeyChecking accept-new' root@$hostIp 'ls'"
-  find . -name ".DS_Store" -delete
-
-  inf "local-cloud config" "Adding $hostIp to the list of known hosts. This may take a moment as connection needs to be confirmed first."
+#  find . -name ".DS_Store" -delete
+  inf "local-cloud integration" "Adding $hostIp to the list of known hosts. This may take a moment as connection needs to be confirmed first."
+  inf "local-cloud integration" "Uploading by $sshCommand"
   eval $sshCommand
 
   inf "cloud" "Performing upload to $scpAddress"
