@@ -30,3 +30,12 @@ upsertNodeDb() {
 getNodeIpByName() {
  python3 ./deploy_lib/py_lib/getIpByName.py $1
 }
+
+databaseUpdate() {
+  if [ $(basename "`pwd`") == "work" ]; then
+    upsertNodeDb
+  else
+    err "database update" "Can not find a database directory. Does work folder exist?"
+    echo $(pwd)
+  fi
+}

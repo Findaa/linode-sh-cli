@@ -6,8 +6,10 @@ kubeHostCreate() {
   cat /dev/null > log/tf.log
   kubeHostDeploy 2>&1 | tee log/tf.log
   sed $'s/[^[:print:]\t]//g' log/tf.log
+  databaseUpdate
   sshConnector 'terraformHost' 'ls 1>/dev/null'
   uploadWorkFiles
+  installTerraformRemoteHost
 }
 
 kubeHostDeploy() {

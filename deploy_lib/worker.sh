@@ -45,7 +45,7 @@ main() {
       ;;
     "testOption")
       inf 'TEST' $(pwd)
-      sshCommand='cd ../tmp && ls'
+      sshCommand='cd ../tmp/bin && mv terraform /usr/local/bin/ && terraform -v'
       sshConnector 'terraformHost' $sshCommand
       ;;
     *) echo "invalid option $REPLY"
@@ -56,15 +56,6 @@ main() {
 
 optionsPrint() {
   echo "\n1.) Create kube host 2.) Create cluster 3.) Delete host 4.) Delete cluster 5.) List nodes 6.) Quit"
-}
-
-databaseUpdate() {
-  if [ $(basename "`pwd`") == "work" ]; then
-    upsertNodeDb
-  else
-    err "database update" "Can not find a database directory. Does work folder exist?"
-    echo $(pwd)
-  fi
 }
 
 main
