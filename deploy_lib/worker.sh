@@ -10,7 +10,7 @@ export LINODE_CLI_TOKEN="949505f61e40135f06bf04fe99c699d15b008f8ca2a6e430d437fd3
 
 main() {
   appUser=$(whoami)
-  inf "APP" "App started by ${appUser}"
+  inf "local application" "App started by ${appUser}"
 
   PS3='Please enter your choice: '
   options=("Create kube host" "Create cluster" "Delete host" "Delete cluster" "List nodes" "Quit" "testOption")
@@ -18,11 +18,10 @@ main() {
     case $opt in
     "Create kube host")
       kubeHostCreate
-      databaseUpdate
       optionsPrint
       ;;
     "Create cluster")
-      echo "TODO"
+      kubeClusterDeploy
       databaseUpdate
       optionsPrint
       ;;
@@ -45,8 +44,8 @@ main() {
       ;;
     "testOption")
       inf 'TEST' $(pwd)
-      sshCommand='ls'
-      sshConnector 'terraformHost' $sshCommand
+      kubeClusterDestroy
+      optionsPrint
       ;;
     *) echo "invalid option $REPLY"
       ;;

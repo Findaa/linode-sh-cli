@@ -9,7 +9,7 @@ prepareLocalEnv() {
   createWorkDir 2>/dev/null
   isError=$?
   if [[ $isError -eq 1 ]]; then
-    err "local start" "Can not create work directory. Directory does not exist. Program will exit now as this is vital for its functionality."
+    err "local environment" "Can not create work directory. Directory does not exist. Program will exit now as this is vital for its functionality."
     exit
   fi
 
@@ -25,54 +25,54 @@ prepareLocalEnv() {
 
 createWorkDir() {
   if [ -d "$WORKDIR" ]; then
-    inf "local start" "Work directory already exists. If terraform files were changed, it requires manual deletion."
+    inf "local environment" "Work directory already exists. If terraform files were changed, it requires manual deletion."
   else
     mkdir $WORKDIR
     cd $WORKDIR
     mkdir log
     mkdir db
     cd ..
-    inf "local start" "Success - Create work directory"
+    inf "local environment" "Success - Create work directory"
   fi
   populateWorkFolder
 }
 
 populateWorkFolder() {
   if [ -n "$(ls -A $WORKDIR/tf 2>/dev/null)" ]; then
-    inf "engine start" "Terraform folder already exists, overwrite is not performed automatically."
+    inf "local environment" "Terraform folder already exists, overwrite is not performed automatically."
   else
     cp -r ./tf $WORKDIR
     isError=$?
     if [[ $isError -eq 1 ]]; then
-      err "engine start" "Can not copy terraform folder. Check if working directory exists or root folder is OK"
+      err "local environment" "Can not copy terraform folder. Check if working directory exists or root folder is OK"
       exit
     fi
-    inf "engine start" "Success - Copy terraform files to work directory"
+    inf "local environment" "Success - Copy terraform files to work directory"
   fi
 
   cp -r ./deploy_lib $WORKDIR
   isError=$?
   if [[ $isError -eq 1 ]]; then
-    err "engine start" "Can not copy deploy_lib folder. Check if working directory exists or root folder is OK"
+    err "local environment" "Can not copy deploy_lib folder. Check if working directory exists or root folder is OK"
     exit
   fi
-  inf "engine start" "Success - Copy deploy_lib files to work directory"
+  inf "local environment" "Success - Copy deploy_lib files to work directory"
 
   cp -r ./bin $WORKDIR
   isError=$?
   if [[ $isError -eq 1 ]]; then
-    err "engine start" "Can not copy bin folder. Check if working directory exists or root folder is OK"
+    err "local environment" "Can not copy bin folder. Check if working directory exists or root folder is OK"
     exit
   fi
-  inf "engine start" "Success - Copy bin files to work directory"
+  inf "local environment" "Success - Copy bin files to work directory"
 
   cp ./deploy_lib/worker.sh $WORKDIR
   isError=$?
   if [[ $isError -eq 1 ]]; then
-    err "engine start" "Can not copy run script. Check if working directory exists or root folder is OK"
+    err "local environment" "Can not copy run script. Check if working directory exists or root folder is OK"
     exit
   fi
-  inf "engine start" "Success - Copy run script files to work directory"
+  inf "local environment" "Success - Copy run script files to work directory"
 }
 
 installPython() {

@@ -19,6 +19,7 @@ uploadWorkFiles() {
 #  scp -r bin $scpAddress 2>1 1>log/scp_log.txt && res='true'
   scp -r deploy_lib $scpAddress && res='true'
   scp -r tf/cluster $scpAddress && res='true'
+  scp -r tf/variables.tf $scpAddress/cluster && res='true'
   scp -r worker.sh $scpAddress && res='true'
   scp -r bin $scpAddress && res='true'
 
@@ -31,8 +32,27 @@ installTerraformRemoteHost () {
   sshConnector 'terraformHost' 'cd ../tmp/bin && mv terraform /usr/local/bin/ && terraform -v'
 }
 
-deployKubeCluster () {
-  inf " " " "
+kubeClusterDeploy() {
+  inf "local terraform" "Starting to deploy kube workers"
+  cd tf/cluster
+  terraform init
+  terraform plan -var-file="../terraform.auto.tfvars"
+  terraform apply -var-file="../terraform.auto.tfvars" -auto-approve
+  cd ../..
+}
+
+kubeClusterDestroy() {
+  cd tf/cluster
+  terraform destroy -auto-approve
+
+  isError=$?
+  if [[ $isError -eq 1 ]]; then
+    err "local" "Linode engine could not be deleted. Probably the work folder was deleted manually. Remove cloud host from linode UI or with cli"
+  else
+    inf "local" "Remote kubernetes host removed."
+  fi
+
+  cd ../..
 }
 
 #If used with 1 arg will open ssh, with 2 args will execute ssh param.

@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "linode" {
-  token = "949505f61e40135f06bf04fe99c699d15b008f8ca2a6e430d437fd3b752735ab"
+  token = var.token
 }
 
 resource "linode_instance" "kubeHost" {
@@ -17,6 +17,6 @@ resource "linode_instance" "kubeHost" {
         group = "Terraform"
         region = "us-east"
         type = "g6-nanode-1"
-        authorized_keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOofLe0fwWFhBU+ufJjLkUFgByHx0dSSWqKz+ilTI0HO michalcop@bntech.dev" ]
+        authorized_keys = var.ssh
         root_pass = "aUIdnkA87cAHJK21"
 }
