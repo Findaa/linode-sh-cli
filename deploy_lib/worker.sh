@@ -41,6 +41,11 @@ main() {
       optionsPrint
       ;;
     "Quit")
+
+      rm -rf bin
+      rm -rf db
+      rm -rf deploy_lib
+
       break
       exit 420
       ;;

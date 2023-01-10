@@ -24,7 +24,7 @@ uploadWorkFiles() {
   sshCommand="ssh -o 'StrictHostKeyChecking accept-new' root@$hostIp 'ls'"
   find . -name ".DS_Store" -delete
 
-  inf "cloud" "Adding $hostIp to the list of known hosts. This may take a moment as connection needs to be confirmed first."
+  inf "local-cloud config" "Adding $hostIp to the list of known hosts. This may take a moment as connection needs to be confirmed first."
   eval $sshCommand
 
   inf "cloud" "Performing upload to $scpAddress"
