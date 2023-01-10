@@ -23,7 +23,7 @@ upsertNodeDb() {
 #  OSX version
   sed -i '' 's/[[:blank:]]\{1,\}/;/g' db.csv
 
-  inf "database update" "Database updated sucessfuly."
+  inf "database" "Database updated sucessfuly."
   cd ..
 }
 
@@ -35,7 +35,7 @@ databaseUpdate() {
   if [ $(basename "`pwd`") == "work" ]; then
     upsertNodeDb
   else
-    err "database update" "Can not find a database directory. Does work folder exist?"
+    err "database" "Can not update database files. Check if work folder exists."
     echo $(pwd)
   fi
 }

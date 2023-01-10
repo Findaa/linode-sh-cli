@@ -58,6 +58,14 @@ populateWorkFolder() {
   fi
   inf "engine start" "Success - Copy deploy_lib files to work directory"
 
+  cp -r ./bin $WORKDIR
+  isError=$?
+  if [[ $isError -eq 1 ]]; then
+    err "engine start" "Can not copy bin folder. Check if working directory exists or root folder is OK"
+    exit
+  fi
+  inf "engine start" "Success - Copy bin files to work directory"
+
   cp ./deploy_lib/worker.sh $WORKDIR
   isError=$?
   if [[ $isError -eq 1 ]]; then

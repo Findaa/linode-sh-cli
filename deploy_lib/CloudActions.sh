@@ -5,37 +5,49 @@
 uploadWorkFiles() {
   hostIp=$(getNodeIpByName 'terraformHost')
   scpAddress="root@$hostIp:/tmp"
+  find . -name ".DS_Store" -delete
 
-  inf "upload" "Performing upload to $scpAddress"
+  inf "cloud" "Adding $hostIp to the list of known hosts. This may take a moment as connection needs to be confirmed first."
+  sshCommand="ssh -o 'StrictHostKeyChecking accept-new' root@$hostIp 'ls'"
+  inf "cloud" "Using $sshCommand"
+  eval $sshCommand
+
+  inf "cloud" "Performing upload to $scpAddress"
 #  scp -r deploy_lib $scpAddress 2>1 1>log/scp_log.txt && res='true'
 #  scp -r tf/cluster $scpAddress 2>1 1>log/scp_log.txt && res='true'
 #  scp -r worker.sh $scpAddress 2>1 1>log/scp_log.txt && res='true'
 #  scp -r bin $scpAddress 2>1 1>log/scp_log.txt && res='true'
-  find . -name ".DS_Store" -delete
   scp -r deploy_lib $scpAddress && res='true'
   scp -r tf/cluster $scpAddress && res='true'
   scp -r worker.sh $scpAddress && res='true'
   scp -r bin $scpAddress && res='true'
+
   #todo: if err
-  inf "upload" "All files uploaded"
+  inf "cloud" "All files uploaded"
 }
 
 installTerraformRemoteHost () {
+  inf "cloud" "Installing terraform for kube host"
   sshConnector 'terraformHost' 'cd ../tmp/bin && mv terraform /usr/local/bin/ && terraform -v'
+}
+
+deployKubeCluster () {
+  inf " " " "
 }
 
 #If used with 1 arg will open ssh, with 2 args will execute ssh param.
 #arg1 <- label of node | arg2 <- potential sh command/script
 sshConnector() {
   hostIp=$(getNodeIpByName $1)
-  inf "connector" "Performing ssh connection to "$hostIp " with command " $2
-  ssh -o 'StrictHostKeyChecking accept-new' root@$hostIp $2
+  inf "connector" "Performing ssh connection to $hostIp with command $2"
+  sshCommand="ssh root@$hostIp '$2'"
+  eval $sshCommand
 
   isError=$?
   if [[ $isError -eq 1 ]]; then
-    err "ssh connector" "Error connecting with ssh"
+    err "connector" "Error connecting with ssh"
   else
-    inf "ssh connector" "Success connecting with ssh"
+    inf "connector" "Success connecting with ssh"
   fi
 }
 

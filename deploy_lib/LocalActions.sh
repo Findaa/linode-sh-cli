@@ -7,7 +7,6 @@ kubeHostCreate() {
   kubeHostDeploy 2>&1 | tee log/tf.log
   sed $'s/[^[:print:]\t]//g' log/tf.log
   databaseUpdate
-  sshConnector 'terraformHost' 'ls 1>/dev/null'
   uploadWorkFiles
   installTerraformRemoteHost
 }
@@ -21,16 +20,16 @@ kubeHostDeploy() {
   cd ../..
 }
 
-#todo: label based removal from IP. Remove from known hosts
+#todo: label based removal from IP. Remove from known hosts. Remove worker nodes first too.
 kubeHostDestroy() {
   cd tf/engine
   terraform destroy -auto-approve --target linode_instance.kubeHost
 
   isError=$?
   if [[ $isError -eq 1 ]]; then
-    err "engine destroy" "Can not delete linode engine."
+    err "local" "Linode engine could not be deleted."
   else
-    inf "engine destroy" "Kube host should not exist now. Check if connected worker nodes are removed."
+    inf "local" "Remote kubernetes host removed."
   fi
 
   cd ../..
