@@ -34,7 +34,7 @@ kubeHostCreate() {
 handshakeWithHost() {
   hostIp=$(getNodeIpByName 'terraformHost')
   waiter
-  inf "local-cloud integration" "Adding $hostIp to the list of known hosts. This may take a moment as connection needs to be confirmed first."
+  inf "integration\t" "Adding $hostIp to the list of known hosts. This may take a moment as connection needs to be confirmed first."
   inf "local cloud integration" "Trying to execute ssh -t -t -o 'StrictHostKeyChecking accept-new' root@$hostIp 'echo hello'"
   ssh -t -t -o 'StrictHostKeyChecking accept-new' root@$hostIp 'echo hello $(pwd)'
 }
@@ -52,9 +52,9 @@ kubeHostDestroy() {
 
   isError=$?
   if [[ $isError -eq 1 ]]; then
-    err "local" "Linode engine could not be deleted. Probably the work folder was deleted manually. Remove cloud host from linode UI or with cli"
+    err "local terraform" "Linode engine could not be deleted. Probably the work folder was deleted manually. Remove cloud host from linode UI or with cli"
   else
-    inf "local" "Remote kubernetes host removed."
+    inf "local terraform" "Remote kubernetes host removed."
   fi
 
   cd ../..
@@ -62,24 +62,24 @@ kubeHostDestroy() {
 }
 
 waiter() {
-  inf "local-cloud integration" "Waiting 10 seconds before handshake try..."
+  inf "integration\t" "Waiting 10 seconds before handshake try..."
   sleep 1
-  inf "local-cloud integration" "Waiting 9 seconds before handshake try..."
+  inf "integration\t" "Waiting 9 seconds before handshake try..."
   sleep 1
-  inf "local-cloud integration" "Waiting 8 seconds before handshake try..."
+  inf "integration\t" "Waiting 8 seconds before handshake try..."
   sleep 1
-  inf "local-cloud integration" "Waiting 7 seconds before handshake try..."
+  inf "integration\t" "Waiting 7 seconds before handshake try..."
   sleep 1
-  inf "local-cloud integration" "Waiting 6 second before handshake try..."
+  inf "integration\t" "Waiting 6 second before handshake try..."
   sleep 1
-  inf "local-cloud integration" "Waiting 5 seconds before handshake try..."
+  inf "integration\t" "Waiting 5 seconds before handshake try..."
   sleep 1
-  inf "local-cloud integration" "Waiting 4 seconds before handshake try..."
+  inf "integration\t" "Waiting 4 seconds before handshake try..."
   sleep 1
-  inf "local-cloud integration" "Waiting 3 seconds before handshake try..."
+  inf "integration\t" "Waiting 3 seconds before handshake try..."
   sleep 1
-  inf "local-cloud integration" "Waiting 2 seconds before handshake try..."
+  inf "integration\t" "Waiting 2 seconds before handshake try..."
   sleep 1
-  inf "local-cloud integration" "Waiting 1 second before handshake try..."
+  inf "integration\t" "Waiting 1 second before handshake try..."
   sleep 1
 }

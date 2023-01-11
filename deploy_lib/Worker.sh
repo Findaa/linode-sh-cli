@@ -13,6 +13,7 @@ main() {
   databaseUpdate
   echo '\n'
   echo "\033[$infoColor Local host menu\033[0m "
+  fetchNodesFormatted
   PS3="Choice:      "
   options=("Create kube host" "Create cluster" "Delete host" "Delete cluster" "List nodes" "Quit" "Enter Cloud" "test")
   select opt in "${options[@]}"; do
@@ -46,12 +47,13 @@ main() {
       exit 420
       ;;
     "Enter Cloud")
-      sh deploy_lib/Cloud.sh
-      echo "a"
+      hostIp=$(getNodeIpByName 'terraformHost')
+      uploadWorkFiles
+      installTerraformRemoteHost
       ;;
     "Test")
-      export infoColor="1;34m"
       sh deploy_lib/Cloud.sh
+      echo "a"
       ;;
     *)
       echo "invalid option $REPLY"
