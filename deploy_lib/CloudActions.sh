@@ -19,9 +19,10 @@ sshConnector() {
 }
 
 uploadWorkFiles() {
+  find . -name ".DS_Store" -delete
   scpAddress="root@$hostIp:/tmp/work"
   inf "cloud" "Performing upload to $scpAddress"
-  scp -rB bin $scpAddress
+  scp -rB bin $scpAddress/bin
   scp -rB tf/terraform.auto.tfvars $scpAddress
   scp -rB deploy_lib $scpAddress
   scp -rB tf/cluster $scpAddress
@@ -49,7 +50,6 @@ kubeClusterDeploy() {
 
 kubeClusterDestroy() {
   cd tf/cluster
-  inf "cloud" "Starting to destroy kube workers"
   terraform destroy -var-file="../terraform.auto.tfvars" -auto-approve 2>1 1>/dev/null
 
   isError=$?

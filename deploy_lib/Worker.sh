@@ -47,7 +47,6 @@ main() {
       ;;
     "Enter Cloud")
       sh deploy_lib/Cloud.sh
-#      handshakeWithHost
       echo "a"
       ;;
     "Test")

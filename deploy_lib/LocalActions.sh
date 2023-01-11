@@ -13,8 +13,6 @@ kubeHostDeploy() {
     err "local deploy" "Could not deploy kubernetes host. Host exists $optionalHost"
   else
     kubeHostCreate 2>&1 | tee log/tf.log
-    sleep 3
-    inf "local deploy" "Waiting 3 seconds before handshake try"
     handshakeWithHost
     uploadWorkFiles
     installTerraformRemoteHost
@@ -30,12 +28,12 @@ kubeHostCreate() {
   inf "local terraform" "Terraform planned. Deploying..."
   terraform apply -var-file="../terraform.auto.tfvars" -auto-approve 2>1 1>/dev/null
   cd ../..
-  inf "local terraform debug" $(pwd)
   databaseUpdate
 }
 
 handshakeWithHost() {
   hostIp=$(getNodeIpByName 'terraformHost')
+  waiter
   inf "local-cloud integration" "Adding $hostIp to the list of known hosts. This may take a moment as connection needs to be confirmed first."
   inf "local cloud integration" "Trying to execute ssh -t -t -o 'StrictHostKeyChecking accept-new' root@$hostIp 'echo hello'"
   ssh -t -t -o 'StrictHostKeyChecking accept-new' root@$hostIp 'echo hello $(pwd)'
@@ -48,6 +46,7 @@ kubeHostDestroy() {
   ssh-keygen -f ~/.ssh/known_hosts -R $hostIp 2>&1 | tee log/local.log
   inf "local terraform" "Destroying kube host. Removing related kube worker nodes"
   kubeClusterDestroy
+  inf "local terraform" "Destroying kube host"
   cd tf/engine
   terraform destroy -var-file="../terraform.auto.tfvars" -auto-approve --target linode_instance.kubeHost 2>1 1>/dev/null
 
@@ -60,4 +59,27 @@ kubeHostDestroy() {
 
   cd ../..
   databaseUpdate
+}
+
+waiter() {
+  inf "local-cloud integration" "Waiting 10 seconds before handshake try..."
+  sleep 1
+  inf "local-cloud integration" "Waiting 9 seconds before handshake try..."
+  sleep 1
+  inf "local-cloud integration" "Waiting 8 seconds before handshake try..."
+  sleep 1
+  inf "local-cloud integration" "Waiting 7 seconds before handshake try..."
+  sleep 1
+  inf "local-cloud integration" "Waiting 6 second before handshake try..."
+  sleep 1
+  inf "local-cloud integration" "Waiting 5 seconds before handshake try..."
+  sleep 1
+  inf "local-cloud integration" "Waiting 4 seconds before handshake try..."
+  sleep 1
+  inf "local-cloud integration" "Waiting 3 seconds before handshake try..."
+  sleep 1
+  inf "local-cloud integration" "Waiting 2 seconds before handshake try..."
+  sleep 1
+  inf "local-cloud integration" "Waiting 1 second before handshake try..."
+  sleep 1
 }
