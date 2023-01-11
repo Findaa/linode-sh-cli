@@ -19,7 +19,7 @@ sshConnector() {
 }
 
 uploadWorkFiles() {
-  scpAddress="root@$hostIp:/tmp"
+  scpAddress="root@$hostIp:/tmp/work"
   inf "cloud" "Performing upload to $scpAddress"
   scp -rB bin $scpAddress
   scp -rB tf/terraform.auto.tfvars $scpAddress
