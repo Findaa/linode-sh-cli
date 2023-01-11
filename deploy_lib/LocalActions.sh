@@ -3,23 +3,25 @@
 . ./deploy_lib/CloudActions.sh
 . ./deploy_lib/DatabaseManager.sh
 
-kubeHostCreate() {
-  cat /dev/null > log/tf.log
+kubeHostDeploy() {
+  cat /dev/null >log/tf.log
   sed $'s/[^[:print:]\t]//g' log/tf.log
   databaseUpdate
-  optionalHost=$(getNodeIpByName 'terraformHost')
 
+  optionalHost=$(getNodeIpByName 'terraformHost')
   if [[ -n $optionalHost ]]; then
     err "local deploy" "Could not deploy kubernetes host. Host exists $optionalHost"
   else
-    kubeHostDeploy 2>&1 | tee log/tf.log
-    databaseUpdate
+    kubeHostCreate 2>&1 | tee log/tf.log
+    sleep 3
+    inf "local deploy" "Waiting 3 seconds before handshake try"
+    handshakeWithHost
     uploadWorkFiles
     installTerraformRemoteHost
   fi
 }
 
-kubeHostDeploy() {
+kubeHostCreate() {
   inf "local terraform" "Starting to deploy kube host"
   cd tf/engine
   terraform init
@@ -28,8 +30,16 @@ kubeHostDeploy() {
   inf "local terraform" "Terraform planned. Deploying..."
   terraform apply -var-file="../terraform.auto.tfvars" -auto-approve 2>1 1>/dev/null
   cd ../..
+  inf "local terraform debug" $(pwd)
+  databaseUpdate
 }
 
+handshakeWithHost() {
+  hostIp=$(getNodeIpByName 'terraformHost')
+  inf "local-cloud integration" "Adding $hostIp to the list of known hosts. This may take a moment as connection needs to be confirmed first."
+  inf "local cloud integration" "Trying to execute ssh -t -t -o 'StrictHostKeyChecking accept-new' root@$hostIp 'echo hello'"
+  ssh -t -t -o 'StrictHostKeyChecking accept-new' root@$hostIp 'echo hello $(pwd)'
+}
 
 #todo: label based removal by IP. Remove worker nodes first too.
 kubeHostDestroy() {
@@ -49,4 +59,5 @@ kubeHostDestroy() {
   fi
 
   cd ../..
+  databaseUpdate
 }

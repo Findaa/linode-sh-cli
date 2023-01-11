@@ -5,6 +5,8 @@
 . ./deploy_lib/const.sh
 
 prepareLocalEnv() {
+  infoColor="1;35m"
+  echo "\n\n\n\n\n\n"
   createWorkDir 2>/dev/null
   isError=$?
   if [[ $isError -eq 1 ]]; then
@@ -19,6 +21,7 @@ prepareLocalEnv() {
 
   cd work
   echo "\n\n"
+  inf "local application" "App started by $(whoami)"
   sh worker.sh
 }
 

@@ -19,21 +19,13 @@ sshConnector() {
 }
 
 uploadWorkFiles() {
-  hostIp=$(getNodeIpByName 'terraformHost')
   scpAddress="root@$hostIp:/tmp"
-  sshCommand="ssh -o 'StrictHostKeyChecking accept-new' root@$hostIp 'ls'"
-#  find . -name ".DS_Store" -delete
-  inf "local-cloud integration" "Adding $hostIp to the list of known hosts. This may take a moment as connection needs to be confirmed first."
-  inf "local-cloud integration" "Uploading by $sshCommand"
-  eval $sshCommand
-
   inf "cloud" "Performing upload to $scpAddress"
-  scp -r tf/terraform.auto.tfvars $scpAddress
-  scp -r deploy_lib $scpAddress
-  scp -r tf/cluster $scpAddress
-  scp -r worker.sh $scpAddress
-  scp -r bin $scpAddress
-
+  scp -rB bin $scpAddress
+  scp -rB tf/terraform.auto.tfvars $scpAddress
+  scp -rB deploy_lib $scpAddress
+  scp -rB tf/cluster $scpAddress
+  scp -rB worker.sh $scpAddress
   #todo: if err
   inf "cloud" "All files uploaded"
 }
@@ -52,6 +44,7 @@ kubeClusterDeploy() {
   inf "cloud" "Terraform planned. Deploying..."
   terraform apply -var-file="../terraform.auto.tfvars" -auto-approve 2>1 1>/dev/null
   cd ../..
+  databaseUpdate
 }
 
 kubeClusterDestroy() {
@@ -63,15 +56,14 @@ kubeClusterDestroy() {
   if [[ $isError -eq 1 ]]; then
     err "cloud" "Linode cluster could not be deleted. Probably doesn't exist or the work folder was deleted manually. Remove cloud host from linode UI or with cli"
   else
-    inf "cloud" "Remote kubernetes host removed."
+    inf "cloud" "Remote kubernetes cluster removed."
   fi
 
   cd ../..
+  databaseUpdate
 }
 
 kubeClusterDeployFromCloud() {
-  sshConnector 'terraformHost' 'cd ../tmp/work/bin && mv terraform /usr/local/bin/ && terraform -v'
-
   sh deploy_lib/cloud_functions/deployCluster.sh
 }
 

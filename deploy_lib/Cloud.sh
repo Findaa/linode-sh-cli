@@ -5,8 +5,10 @@
 . deploy_lib/Log.sh
 
 runCloud() {
+  infoColor="36;49m"
   echo '\n'
-  echo "\033[1;35mCloud host menu\033[0m "
+  echo "\033[$infoColor Cloud host menu\033[0m "
+  echo $infoColor
   PS3="Choice:    "
   options=("Create cluster" "Delete cluster" "List nodes" "Quit cloud back to local")
   select opt in "${options[@]}"; do
