@@ -2,7 +2,6 @@
 
 . ./deploy_lib/Log.sh
 . ./deploy_lib/Installer.sh
-
 . ./deploy_lib/const.sh
 
 prepareLocalEnv() {

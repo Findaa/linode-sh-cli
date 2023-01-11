@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./deploy_lib/CloudActions.sh
+. ./deploy_lib/CloudHandler.sh
 
 installPython() {
   python3 --version

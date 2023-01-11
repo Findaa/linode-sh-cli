@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ./deploy_lib/CloudActions.sh
+. ./deploy_lib/CloudHandler.sh
 . ./deploy_lib/DatabaseManager.sh
 . ./deploy_lib/Installer.sh
 
@@ -13,11 +13,18 @@ kubeHostDeploy() {
   if [[ -n $optionalHost ]]; then
     err "local deploy" "Could not deploy kubernetes host. Host exists $optionalHost"
   else
-    kubeHostCreate 2>&1 | tee log/tf.log && handshakeWithHost
-    uploadWorkFiles
-    installTerraformRemote
-    installKubectlRemote
+    kubeHostCreate && handshakeWithHost
+    handshakeWithHost && kubeHostConfigure
+
   fi
+}
+
+kubeHostConfigure() {
+  hostIp=$(getNodeIpByName 'terraformHost')
+  uploadWorkFiles
+  installLibrariesRemoteHost
+  installTerraformRemote
+  installKubectlRemote
 }
 
 kubeHostCreate() {

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. deploy_lib/CloudActions.sh
+. deploy_lib/CloudHandler.sh
 . deploy_lib/DatabaseManager.sh
 . deploy_lib/Log.sh
 

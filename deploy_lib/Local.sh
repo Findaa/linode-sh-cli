@@ -1,12 +1,10 @@
 #!/bin/bash
 
-WORKDIR="./work"
-export LINODE_CLI_TOKEN="949505f61e40135f06bf04fe99c699d15b008f8ca2a6e430d437fd3b752735ab"
-
-. deploy_lib/LocalActions.sh
-. deploy_lib/CloudActions.sh
+. deploy_lib/LocalHandler.sh
+. deploy_lib/CloudHandler.sh
 . deploy_lib/DatabaseManager.sh
 . deploy_lib/Log.sh
+. deploy_lib/const.sh
 
 main() {
   export infoColor="1;35m"
