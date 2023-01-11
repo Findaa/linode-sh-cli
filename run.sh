@@ -1,12 +1,15 @@
 #!/bin/bash
 
 . ./deploy_lib/Log.sh
+. ./deploy_lib/Installer.sh
 
 . ./deploy_lib/const.sh
 
 prepareLocalEnv() {
   infoColor="1;35m"
   echo "\n\n\n\n\n\n"
+  inf "local environment" "Application boot started. Preparing environment..."
+
   createWorkDir 2>/dev/null
   isError=$?
   if [[ $isError -eq 1 ]]; then
@@ -22,7 +25,7 @@ prepareLocalEnv() {
   cd work
   echo "\n\n"
   inf "local application" "App started by $(whoami)"
-  sh worker.sh
+  sh Local.sh
 }
 
 createWorkDir() {
@@ -68,54 +71,13 @@ populateWorkFolder() {
   fi
   inf "local environment" "Success - Copy bin files to work directory"
 
-  cp ./deploy_lib/worker.sh $WORKDIR
+  cp ./deploy_lib/Local.sh $WORKDIR
   isError=$?
   if [[ $isError -eq 1 ]]; then
     err "local environment" "Can not copy run script. Check if working directory exists or root folder is OK"
     exit
   fi
   inf "local environment" "Success - Copy run script files to work directory"
-}
-
-installPython() {
-  python3 --version
-  isError=$?
-  if [[ $isError -eq 0 ]]; then
-    inf "local python3" "Python3 already installed"
-  else
-    sudo apt update
-    sudo apt install python3
-    inf "local python3" "Python3 installed successfully"
-  fi
-
-  pip3 --version
-  isError=$?
-  if [[ $isError -eq 0 ]]; then
-    inf "local python3" "Pip3 already installed"
-  else
-    sudo apt install python3-pip
-    inf "local python3" "Pip3 installed successfully"
-  fi
-}
-
-installLinodeCli() {
-  linode-cli --version 2>/dev/null
-  isError=$?
-  if [[ $isError -eq 0 ]]; then
-    inf "local linode-cli" "Linode cli already installed"
-    exit
-  else
-    pip3 install linode-cli --upgrade
-    pip3 install boto
-  fi
-
-  linode-cli --version 2>/dev/null
-  isError=$?
-  if [[ $isError -eq 0 ]]; then
-    inf "local linode-cli" "Linode cli installed successfully"
-  else
-    err "local linode-cli" "Could not install linode cli"
-  fi
 }
 
 prepareLocalEnv

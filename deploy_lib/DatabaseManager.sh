@@ -11,6 +11,7 @@ fetchNodesFormatted() {
 fetchNodesJson() {
   linode-cli linodes list --json --pretty
 }
+
 upsertNodeDb() {
   cat /dev/null > db/db.txt
   fetchNodesPlaintext > db/db.txt

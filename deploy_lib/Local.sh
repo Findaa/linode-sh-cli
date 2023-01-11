@@ -9,7 +9,7 @@ export LINODE_CLI_TOKEN="949505f61e40135f06bf04fe99c699d15b008f8ca2a6e430d437fd3
 . deploy_lib/Log.sh
 
 main() {
-  infoColor="1;35m"
+  export infoColor="1;35m"
   databaseUpdate
   echo '\n'
   echo "\033[$infoColor Local host menu\033[0m "
@@ -47,13 +47,18 @@ main() {
       exit 420
       ;;
     "Enter Cloud")
-      hostIp=$(getNodeIpByName 'terraformHost')
-      uploadWorkFiles
-      installTerraformRemoteHost
-      ;;
-    "Test")
       sh deploy_lib/Cloud.sh
       echo "a"
+#      hostIp=$(getNodeIpByName 'terraformHost')
+#      uploadWorkFiles
+#      installLibrariesRemoteHost
+      ;;
+    "Test")
+#      sh deploy_lib/Cloud.sh
+#      echo "a"
+      hostIp=$(getNodeIpByName 'terraformHost')
+      uploadWorkFiles
+      installLibrariesRemoteHost
       ;;
     *)
       echo "invalid option $REPLY"

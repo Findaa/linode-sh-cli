@@ -18,28 +18,6 @@ sshConnector() {
   fi
 }
 
-uploadWorkFiles() {
-  find . -name ".DS_Store" -delete
-  scpAddress="root@$hostIp:/tmp/work"
-
-  inf "cloud\t\t" "Creating $scpAddress/bin"
-  sshConnector 'terraformHost' 'cd ../tmp/ && mkdir work && cd work && mkdir bin'
-
-  inf "cloud\t\t" "Performing upload to $scpAddress"
-  scp -rB bin $scpAddress/bin
-  scp -rB tf/terraform.auto.tfvars $scpAddress
-  scp -rB deploy_lib $scpAddress
-  scp -rB tf/cluster $scpAddress
-  scp -rB worker.sh $scpAddress
-  #todo: if err
-  inf "cloud\t\t" "All files uploaded"
-}
-
-installTerraformRemoteHost() {
-  inf "cloud\t\t" "Installing terraform for kube host"
-  sshConnector 'terraformHost' 'cd ../tmp/work/bin && mv terraform /usr/local/bin/ && terraform -v'
-}
-
 kubeClusterDeploy() {
   inf "cloud\t\t" "Starting to deploy kube workers"
   cd tf/cluster
@@ -67,13 +45,26 @@ kubeClusterDestroy() {
   databaseUpdate
 }
 
+getNodeIpByName() {
+  python3 ./deploy_lib/py_lib/fetchKubeNodes
+}
+
+fetchNodesCloud() {
+  python3 ./deploy_lib/py_lib/fetchKubeNodes.py
+}
+
+kubeNodesFetchFromCloud() {
+  sh deploy_lib/cloud_functions/fetch-nodes.sh
+}
+
 kubeClusterDeployFromCloud() {
-  sh deploy_lib/cloud_functions/deployCluster.sh
+  sh deploy_lib/cloud_functions/deploy-cluster.sh
 }
 
 kubeClusterDestroyFromCloud() {
-  sh deploy_lib/cloud_functions/deployCluster.sh
+  sh deploy_lib/cloud_functions/destroy-cluster.sh
 }
+
 sshConnectionEnd() {
   exit
 }

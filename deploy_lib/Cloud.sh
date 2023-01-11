@@ -5,10 +5,9 @@
 . deploy_lib/Log.sh
 
 runCloud() {
-  infoColor="36;49m"
+  export infoColor="36;49m"
   echo '\n'
   echo "\033[$infoColor Cloud host menu\033[0m "
-  echo $infoColor
   PS3="Choice:    "
   options=("Create cluster" "Delete cluster" "List nodes" "Quit cloud back to local")
   select opt in "${options[@]}"; do
@@ -16,23 +15,27 @@ runCloud() {
     "Create cluster")
       kubeClusterDeployFromCloud
       databaseUpdate
-      optionsPrint
+      cloudOptionsPrint
       ;;
     "Delete cluster")
       kubeClusterDestroyFromCloud
       databaseUpdate
-      optionsPrint
+      cloudOptionsPrint
       ;;
     "List nodes")
-      fetchNodesFormattedCloud
+      kubeNodesFetchFromCloud
       databaseUpdate
-      optionsPrint
+      cloudOptionsPrint
       ;;
     "Quit cloud back to local")
-      sh deploy_lib/Worker.sh
+      sh deploy_lib/Local.sh
       ;;
     esac
   done
+}
+
+cloudOptionsPrint() {
+  echo "\n1.) Create cluster\t3.) List nodes\n2.) Delete cluster\t4.) Quit cloud back to local"
 }
 
 runCloud
