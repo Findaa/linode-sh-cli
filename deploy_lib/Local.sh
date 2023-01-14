@@ -10,8 +10,8 @@ main() {
   export infoColor="1;35m"
   databaseUpdate
   echo '\n'
-  echo "\033[$infoColor Local host menu\033[0m "
   fetchNodesFormatted
+  echo "\033[$infoColor Local host menu\033[0m "
   PS3="Choice:      "
   options=("Create kube host" "Create cluster" "Delete host" "Delete cluster" "List nodes" "Quit" "Enter Cloud" "test")
   select opt in "${options[@]}"; do

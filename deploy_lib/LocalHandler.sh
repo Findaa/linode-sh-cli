@@ -13,9 +13,7 @@ kubeHostDeploy() {
   if [[ -n $optionalHost ]]; then
     err "local deploy" "Could not deploy kubernetes host. Host exists $optionalHost"
   else
-    kubeHostCreate && handshakeWithHost
-    handshakeWithHost && kubeHostConfigure
-
+    kubeHostCreate && handshakeWithHost && kubeHostConfigure
   fi
 }
 
@@ -41,22 +39,37 @@ kubeHostCreate() {
 
 handshakeWithHost() {
   hostIp=$(getNodeIpByName 'terraformHost')
-  waiter "before handshake try..."
-  inf "integration\t" "Adding $hostIp to the list of known hosts. This may take a moment as connection needs to be confirmed first."
-  inf "integration\t" "Trying to execute ssh -t -t -o 'StrictHostKeyChecking accept-new' root@$hostIp 'echo hello'"
+  try=1
+
+  if [[ $try -eq 3 ]]; then
+    err "integration" "Connection to root@$hostIp could not be established after 3 tries. Reverting changes"
+    kubeHostDestroy
+  fi
+
+  inf "integration\t" "Offering handshake from $pwd to root@$hostIp (Attempt $try/3)"
   ssh -t -t -o 'StrictHostKeyChecking accept-new' root@$hostIp 'echo hello $(pwd)'
+
+  isError=$?
+  if [[ $isError -eq 0 ]]; then
+    inf "integration" "Added $hostIp to the list of known hosts. Connection may be established now."
+  else
+    try=$(echo "$try+1" | bc)
+    err "integration" "Connection to root@$hostIp could not be established. Trying again. (Attempt $try/3)"
+    waiter "before another handshake try..."
+    handshakeWithHost
+  fi
 }
 
-#todo: label based removal by IP. Remove worker nodes first too.
+#todo: Label based removal by IP.
 kubeHostDestroy() {
   hostIp=$(getNodeIpByName 'terraformHost')
-  inf "local terraform" "Destroying kube host. Removing $hostIp from known hosts "
-  ssh-keygen -f ~/.ssh/known_hosts -R $hostIp 2>&1 | tee log/local.log
-  inf "local terraform" "Destroying kube host. Removing related kube worker nodes"
+  inf "local terraform" "Destroying kube host $hostIp. Removing related kube worker nodes"
   kubeClusterDestroy
   inf "local terraform" "Destroying kube host"
   cd tf/engine
   terraform destroy -var-file="../terraform.auto.tfvars" -auto-approve --target linode_instance.kubeHost 2>1 1>/dev/null
+  inf "local terraform" "Destroying kube host. Removing $hostIp from known hosts "
+  ssh-keygen -f ~/.ssh/known_hosts -R $hostIp 2>&1 | tee log/local.log
 
   isError=$?
   if [[ $isError -eq 1 ]]; then
