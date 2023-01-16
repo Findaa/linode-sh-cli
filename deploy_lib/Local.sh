@@ -13,7 +13,7 @@ main() {
   fetchNodesFormatted
   echo "\033[$infoColor Local host menu\033[0m "
   PS3="Choice:      "
-  options=("Create kube host" "Create cluster" "Delete host" "Delete cluster" "List nodes" "Quit" "Enter Cloud" "test")
+  options=("Create kube host" "Create cluster" "Delete host" "Delete cluster" "List nodes" "Quit" "Enter Cloud")
   select opt in "${options[@]}"; do
     case $opt in
     "Create kube host")
@@ -46,17 +46,6 @@ main() {
       ;;
     "Enter Cloud")
       sh deploy_lib/Cloud.sh
-      echo "a"
-#      hostIp=$(getNodeIpByName 'terraformHost')
-#      uploadWorkFiles
-#      installLibrariesRemoteHost
-      ;;
-    "Test")
-#      sh deploy_lib/Cloud.sh
-#      echo "a"
-      hostIp=$(getNodeIpByName 'terraformHost')
-      uploadWorkFiles
-      installLibrariesRemoteHost
       ;;
     *)
       echo "invalid option $REPLY"

@@ -13,8 +13,6 @@ sshConnector() {
   isError=$?
   if [[ $isError -eq 1 ]]; then
     err "connector\t" "Error connecting with ssh"
-  else
-    inf "connector\t" "Connection tried with ssh"
   fi
 }
 

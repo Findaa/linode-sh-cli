@@ -14,13 +14,13 @@ kubeHostDeploy() {
     err "local deploy" "Could not deploy kubernetes host. Host exists $optionalHost"
   else
     kubeHostCreate && handshakeWithHost && kubeHostConfigure
+    inf "local deploy" "Kube host initialized successfully"
   fi
 }
 
 kubeHostConfigure() {
   hostIp=$(getNodeIpByName 'terraformHost')
   uploadWorkFiles
-  installLibrariesRemoteHost
   installTerraformRemote
   installKubectlRemote
 }
@@ -46,7 +46,7 @@ handshakeWithHost() {
     kubeHostDestroy
   fi
 
-  inf "integration\t" "Offering handshake from $pwd to root@$hostIp (Attempt $try/3)"
+  inf "integration\t" "Offering handshake from $(whoami) to root@$hostIp (Attempt $try/3)"
   ssh -t -t -o 'StrictHostKeyChecking accept-new' root@$hostIp 'echo hello $(pwd)'
 
   isError=$?
@@ -63,22 +63,19 @@ handshakeWithHost() {
 #todo: Label based removal by IP.
 kubeHostDestroy() {
   hostIp=$(getNodeIpByName 'terraformHost')
+
   inf "local terraform" "Destroying kube host $hostIp. Removing related kube worker nodes"
   kubeClusterDestroy
+
   inf "local terraform" "Destroying kube host"
   cd tf/engine
-  terraform destroy -var-file="../terraform.auto.tfvars" -auto-approve --target linode_instance.kubeHost 2>1 1>/dev/null
+  terraform destroy -var-file="../terraform.auto.tfvars" -auto-approve --target linode_instance.kubeHost
+
   inf "local terraform" "Destroying kube host. Removing $hostIp from known hosts "
   ssh-keygen -f ~/.ssh/known_hosts -R $hostIp 2>&1 | tee log/local.log
 
-  isError=$?
-  if [[ $isError -eq 1 ]]; then
-    err "local terraform" "Linode engine could not be deleted. Probably the work folder was deleted manually. Remove cloud host from linode UI or with cli"
-  else
-    inf "local terraform" "Remote kubernetes host removed."
-  fi
-
   cd ../..
+  inf "local terraform" "Kube host destroyed"
   databaseUpdate
 }
 
@@ -86,10 +83,10 @@ uploadWorkFiles() {
   find . -name ".DS_Store" -delete
   scpAddress="root@$hostIp:/tmp/work"
 
-  inf "cloud\t\t" "Creating $scpAddress/bin"
+  inf "engine\t\t" "Creating $scpAddress/bin"
   sshConnector 'terraformHost' 'cd ../tmp/ && mkdir work && cd work && mkdir bin && mkdir tf'
 
-  inf "cloud\t\t" "Performing upload to $scpAddress"
+  inf "engine\t\t" "Performing upload to $scpAddress"
   scp -rB bin $scpAddress
   scp -rB deploy_lib $scpAddress
   scp -rB tf/cluster $scpAddress/tf
@@ -97,7 +94,7 @@ uploadWorkFiles() {
   scp -rB tf $scpAddress
   scp -rB Local.sh $scpAddress
   #todo: if err
-  inf "cloud\t\t" "All files uploaded"
+  inf "engine\t\t" "All files uploaded"
 }
 
 waiter() {

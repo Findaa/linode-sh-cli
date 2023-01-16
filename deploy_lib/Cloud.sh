@@ -3,6 +3,7 @@
 . deploy_lib/CloudHandler.sh
 . deploy_lib/DatabaseManager.sh
 . deploy_lib/Log.sh
+. deploy_lib/const.sh
 
 runCloud() {
   export infoColor="36;49m"
@@ -28,6 +29,7 @@ runCloud() {
       cloudOptionsPrint
       ;;
     "Quit cloud back to local")
+      inf "cloud" "Closing connection"
       sh deploy_lib/Local.sh
       ;;
     esac

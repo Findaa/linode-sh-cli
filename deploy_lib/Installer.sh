@@ -44,13 +44,13 @@ installLinodeCli() {
 }
 
 installTerraformRemote() {
-  inf "cloud\t\t" "Installing terraform for kube host"
+  inf "engine\t\t" "Installing terraform for kube host"
   sshConnector 'terraformHost' 'cd ../tmp/work/bin && mv terraform /usr/local/bin/ && terraform -v'
-  inf "cloud\t\t" "Terraform installed."
+  inf "engine\t\t" "Terraform installed."
 }
 
 installKubectlRemote() {
-  inf "cloud\t\t" " Installing kubectl..."
+  inf "engine\t\t" " Installing kubectl..."
   sshConnector 'terraformHost' 'cd ../tmp/work/bin && curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && kubectl version --client'
-  inf "cloud\t\t" "Kubectl installed"
+  inf "engine\t\t" "Kubectl installed"
 }

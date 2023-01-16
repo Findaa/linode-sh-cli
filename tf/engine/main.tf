@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "linode" {
-  token = var.linode_token
+  token = var.token
 }
 
 resource "linode_instance" "kubeHost" {
