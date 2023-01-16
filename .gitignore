@@ -7,3 +7,4 @@ work
 *.tfstate.backup
 *.lock.hcl
 1
+r.sh

@@ -4,6 +4,30 @@
 . ./deploy_lib/Installer.sh
 . ./deploy_lib/const.sh
 
+argVerbose=0
+argToken=""
+argSsh=""
+
+while getopts "v:a:s:" option; do
+  case "${option}" in
+  v)
+    argVerbose=1
+    ;;
+  a)
+    argToken=${OPTARG}
+    ;;
+  s)
+    argSsh=${OPTARG}
+    ;;
+  esac
+done
+
+seds() {
+  sed -i '' "s/TOKEN_SED/$argToken/g" deploy_lib/const.sh
+  sed -i '' "s/TOKEN_SED/$argToken/g" tf/terraform.auto.tfvars
+  sed -i '' "s/SSH_SED/$argSsh/g" tf/terraform.auto.tfvars
+}
+
 prepareLocalEnv() {
   infoColor="1;35m"
   echo "\n\n\n\n\n\n"
@@ -18,10 +42,10 @@ prepareLocalEnv() {
 
   installPython 2>&1 | tee $WORKDIR/log/local.log
   installLinodeCli 2>&1 | tee $WORKDIR/log/local.log
-# special sign removal (some shit colours)
-  sed $'s/[^[:print:]\t]//g' $WORKDIR/log/local.log
+  # special sign removal (some shit colours)
 
-  cd work
+  cd $WORKDIR
+  seds
   echo "\n\n"
   inf "local application" "App started by $(whoami)"
   sh Local.sh
