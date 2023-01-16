@@ -6,20 +6,20 @@ installPython() {
   python3 --version
   isError=$?
   if [[ $isError -eq 0 ]]; then
-    inf "local python3" "Python3 already installed"
+    inf "local python3\t" "Python3 already installed"
   else
     sudo apt update
     sudo apt install python3
-    inf "local python3" "Python3 installed successfully"
+    inf "local python3\t" "Python3 installed successfully"
   fi
 
   pip3 --version
   isError=$?
   if [[ $isError -eq 0 ]]; then
-    inf "local python3" "Pip3 already installed"
+    inf "local python3\t" "Pip3 already installed"
   else
     sudo apt install python3-pip
-    inf "local python3" "Pip3 installed successfully"
+    inf "local python3\t" "Pip3 installed successfully"
   fi
 }
 
@@ -44,13 +44,13 @@ installLinodeCli() {
 }
 
 installTerraformRemote() {
-  inf "engine\t\t" "Installing terraform for kube host"
+  inf "engine\t" "Installing terraform for kube host"
   sshConnector 'terraformHost' 'cd ../tmp/work/bin && mv terraform /usr/local/bin/ && terraform -v'
-  inf "engine\t\t" "Terraform installed."
+  inf "engine\t" "Terraform installed."
 }
 
 installKubectlRemote() {
-  inf "engine\t\t" " Installing kubectl..."
-  sshConnector 'terraformHost' 'cd ../tmp/work/bin && curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && kubectl version --client'
-  inf "engine\t\t" "Kubectl installed"
+  inf "engine\t" " Installing kubectl..."
+  sshConnector 'terraformHost' 'cd ../tmp/work && curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl && kubectl version --client'
+  inf "engine\t" "Kubectl installed"
 }

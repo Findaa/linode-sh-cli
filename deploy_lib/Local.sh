@@ -5,37 +5,46 @@
 . deploy_lib/DatabaseManager.sh
 . deploy_lib/Log.sh
 . deploy_lib/const.sh
+. deploy_lib/Menus.sh
+
+echo $1
+if [[ $1 == 'redirect' ]]; then
+  echo $1
+fi
 
 main() {
-  export infoColor="1;35m"
+  infoColor="1;35m"
   databaseUpdate
-  echo '\n'
   fetchNodesFormatted
+  echo '\n'
   echo "\033[$infoColor Local host menu\033[0m "
+
   PS3="Choice:      "
   options=("Create kube host" "Create cluster" "Delete host" "Delete cluster" "List nodes" "Quit" "Enter Cloud")
   select opt in "${options[@]}"; do
     case $opt in
     "Create kube host")
       kubeHostDeploy
-      optionsPrint
+      printLocalMenu
       ;;
     "Create cluster")
       kubeClusterDeploy
-      optionsPrint
+      databaseUpdate
+      printLocalMenu
       ;;
     "Delete host")
       kubeHostDestroy
-      optionsPrint
+      printLocalMenu
       ;;
     "Delete cluster")
       kubeClusterDestroy
-      optionsPrint
+      databaseUpdate
+      printLocalMenu
       ;;
     "List nodes")
       fetchNodesFormatted
       databaseUpdate
-      optionsPrint
+      printLocalMenu
       ;;
     "Quit")
       rm -rf work/bin
@@ -52,10 +61,6 @@ main() {
       ;;
     esac
   done
-}
-
-optionsPrint() {
-  echo "\n1.) Create kube host\t4.) Delete cluster\t7.) Enter Cloud \n2.) Create cluster\t5.) List nodes\t\t8.) test\n3.) Delete host\t\t6.) Quit "
 }
 
 main

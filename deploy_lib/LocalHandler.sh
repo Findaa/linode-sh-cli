@@ -23,6 +23,8 @@ kubeHostConfigure() {
   uploadWorkFiles
   installTerraformRemote
   installKubectlRemote
+  sshConnector 'terraformHost' 'export infoColor="36;49m"'
+
 }
 
 kubeHostCreate() {
@@ -69,9 +71,9 @@ kubeHostDestroy() {
 
   inf "local terraform" "Destroying kube host"
   cd tf/engine
-  terraform destroy -var-file="../terraform.auto.tfvars" -auto-approve --target linode_instance.kubeHost
+  terraform destroy -var-file="../terraform.auto.tfvars" -auto-approve --target linode_instance.kubeHost 2>&1 1>/dev/null
 
-  inf "local terraform" "Destroying kube host. Removing $hostIp from known hosts "
+  inf "local terraform" "Kube host destroed. Removing $hostIp from known hosts "
   ssh-keygen -f ~/.ssh/known_hosts -R $hostIp 2>&1 | tee log/local.log
 
   cd ../..
@@ -83,10 +85,10 @@ uploadWorkFiles() {
   find . -name ".DS_Store" -delete
   scpAddress="root@$hostIp:/tmp/work"
 
-  inf "engine\t\t" "Creating $scpAddress/bin"
+  inf "engine\t" "Creating $scpAddress/bin"
   sshConnector 'terraformHost' 'cd ../tmp/ && mkdir work && cd work && mkdir bin && mkdir tf'
 
-  inf "engine\t\t" "Performing upload to $scpAddress"
+  inf "integration\t" "Performing upload to $scpAddress"
   scp -rB bin $scpAddress
   scp -rB deploy_lib $scpAddress
   scp -rB tf/cluster $scpAddress/tf
@@ -94,7 +96,7 @@ uploadWorkFiles() {
   scp -rB tf $scpAddress
   scp -rB Local.sh $scpAddress
   #todo: if err
-  inf "engine\t\t" "All files uploaded"
+  inf "engine\t" "All files uploaded"
 }
 
 waiter() {

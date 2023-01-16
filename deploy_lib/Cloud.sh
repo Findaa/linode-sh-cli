@@ -4,9 +4,10 @@
 . deploy_lib/DatabaseManager.sh
 . deploy_lib/Log.sh
 . deploy_lib/const.sh
+. deploy_lib/Menus.sh
 
 runCloud() {
-  export infoColor="36;49m"
+  infoColor="36;49m"
   echo '\n'
   echo "\033[$infoColor Cloud host menu\033[0m "
   PS3="Choice:    "
@@ -15,29 +16,25 @@ runCloud() {
     case $opt in
     "Create cluster")
       kubeClusterDeployFromCloud
-      databaseUpdate
-      cloudOptionsPrint
+      printCloudMenu
       ;;
     "Delete cluster")
       kubeClusterDestroyFromCloud
-      databaseUpdate
-      cloudOptionsPrint
+      printCloudMenu
       ;;
     "List nodes")
       kubeNodesFetchFromCloud
-      databaseUpdate
-      cloudOptionsPrint
+      printCloudMenu
       ;;
     "Quit cloud back to local")
       inf "cloud" "Closing connection"
-      sh deploy_lib/Local.sh
+      echo "\n"
+      infoColor="1;35m"
+      printLocalMenu
+      exit
       ;;
     esac
   done
-}
-
-cloudOptionsPrint() {
-  echo "\n1.) Create cluster\t3.) List nodes\n2.) Delete cluster\t4.) Quit cloud back to local"
 }
 
 runCloud

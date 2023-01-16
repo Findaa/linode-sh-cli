@@ -25,23 +25,18 @@ kubeClusterDeploy() {
   inf "cloud\t\t" "Terraform planned. Deploying..."
   terraform apply -var-file="../terraform.auto.tfvars" -auto-approve 2>1 1>/dev/null
   cd ../..
-  databaseUpdate
 }
 
 #todo: Add validation if cluster exists
 kubeClusterDestroy() {
+  inf "cloud\t\t" "Removing kube cluster"
+
   cd tf/cluster
   terraform destroy -var-file="../terraform.auto.tfvars" -auto-approve 2>1 1>/dev/null
 
-  isError=$?
-  if [[ $isError -eq 1 ]]; then
-    err "cloud\t\t" "Linode cluster could not be deleted. Probably doesn't exist or the work folder was deleted manually."
-  else
-    inf "cloud\t\t" "Remote kubernetes cluster removed."
-  fi
+  inf "cloud\t\t" "Remote kubernetes cluster removed."
 
   cd ../..
-  databaseUpdate
 }
 
 kubeNodesFetchFromCloud() {
@@ -49,19 +44,16 @@ kubeNodesFetchFromCloud() {
 }
 
 kubeClusterDeployFromCloud() {
-  sh deploy_lib/cloud_functions/deploy-cluster.sh
+  sshConnector 'terraformHost' 'cd ../tmp/work && sh deploy_lib/cloud_functions/deploy-cluster.sh'
 }
 
 kubeClusterDestroyFromCloud() {
+  sshConnector 'terraformHost' 'cd ../tmp/work && sh deploy_lib/cloud_functions/destroy-cluster.sh'
   sh deploy_lib/cloud_functions/destroy-cluster.sh
 }
 
 sshConnectionEnd() {
   exit
-}
-
-fetchNodesCloud() {
-  python3 ./deploy_lib/py_lib/fetchKubeNodes.py
 }
 
 getNodeIpByName() {

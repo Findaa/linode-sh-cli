@@ -24,7 +24,7 @@ upsertNodeDb() {
 #  OSX version
   sed -i '' 's/[[:blank:]]\{1,\}/;/g' db.csv
 
-  inf "database\t" "Database updated sucessfuly."
+  inf "database\tf" "Database updated sucessfuly."
   cd ..
 }
 
