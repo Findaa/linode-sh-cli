@@ -45,6 +45,9 @@ kubeNodesFetchFromCloud() {
 
 kubeClusterDeployFromCloud() {
   sshConnector 'terraformHost' 'cd ../tmp/work && sh deploy_lib/cloud_functions/deploy-cluster.sh'
+  inf "cloud" "Downloading kube config"
+  sshConnector 'terraformHost' 'cd ../tmp/work && export KUBE_VAR=`terraform output kubeconfig` && echo $KUBE_VAR | base64 -di > lke-cluster-config.yaml && echo lke-cluster-config.yaml'
+
 }
 
 kubeClusterDestroyFromCloud() {
