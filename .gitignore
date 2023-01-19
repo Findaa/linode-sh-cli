@@ -2,7 +2,6 @@
 work
 *.log
 .terraform
-/tf/terraform.auto.tfvars
 *.tfstate
 *.tfstate.backup
 *.lock.hcl
